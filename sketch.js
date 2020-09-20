@@ -3,6 +3,8 @@ var space;
 var galaxianGroup, galaxian1Group, galaxian2Group, galaxian3Group;
 var bulletGroup;
 
+var alien,alienImg;
+
 var spaceImg,playerImg;
 var enemyImg,enemyImg2,enemyImg3,enemyImg4;
 
@@ -10,15 +12,20 @@ var createGalaxian,createGalaxian1,createGalaxian2,createGalaxian3;
 
 var burstImg, bulletImg;
 
+var laser,laserImg;
+
 
 function preload(){
   spaceImg=loadImage("images/bg.jpg");
   playerImg=loadImage("images/player.png");
 
-  enemyImg=loadImage("images/enemy.jpg");
+  enemyImg=loadImage("images/download.png");
   enemyImg2=loadImage("images/enemy2.png");
   enemyImg3=loadImage("images/enemy3.png");
   enemyImg4=loadImage("images/enemy4.png");
+
+  alienImg=loadImage("images/alien.png");
+  laserImg=loadImage("images/laserblue.png")
 
   burstImg=loadImage("images/burst.jpg");
   bulletImg=loadImage("images/bullet.png");
@@ -31,11 +38,14 @@ function setup(){
      space.scale = 2.5;
      space.y = space.height/2;
      
-
-
      player = createSprite(190, 365,20,20);
      player.addImage(playerImg);
      player.scale=0.5;
+
+     alienGroup=createGroup();
+     //alien.addImage(alienImg);
+
+     laserGroup=createGroup();
 
      //GROUPS
      galaxianGroup = createGroup();
@@ -83,7 +93,6 @@ function draw() {
   else if (bulletGroup.isTouching(galaxian2Group)) 
 
   {
-    
     galaxian2Group.destroyEach();
     bulletGroup.destroyEach(); 
     enemyBulletGroup.destroyEach();
@@ -97,10 +106,24 @@ function draw() {
     enemyBulletGroup.destroyEach();
     score = score + 1;
   }
+
+  if(laserGroup.isTouching(player))
+  {
+    laserGroup.destroyEach();
+    score=score-2;
+  }
+
+  if(World.frameCount%150==0){
+    createAlien();
+  }
+
+  if(World.frameCount%80==0){
+    createLaser();
+  }
   
  var select_enemy = Math.round(random(0,3));
   
-  if (World.frameCount % 100 == 0)
+  if (World.frameCount %80 == 0)
     {
     if (select_enemy == 0) 
     {
@@ -130,8 +153,8 @@ function createGalaxian()
 {
   galaxian = createSprite(Math.round(random(20, 380)), 0, 10, 10);
   galaxian.addImage(enemyImg);
-  galaxian.velocityY = 1.2;
-  galaxian.scale=0.09;
+  galaxian.velocityY = 5;
+  galaxian.scale=0.6;
   galaxian.lifetime = 500;
   galaxianGroup.add(galaxian);
 }
@@ -139,7 +162,7 @@ function createGalaxian()
 function createGalaxian1() {
   galaxian1 = createSprite(Math.round(random(20, 380)), 0, 10, 10);
   galaxian1.addImage(enemyImg2);
-  galaxian1.scale=0.09;
+  galaxian1.scale=0.07;
   galaxian1.velocityY = 2;
   galaxian1.lifetime = 500;
   galaxian1Group.add(galaxian1);
@@ -157,7 +180,7 @@ function createGalaxian2()
 
 function createGalaxian3() {
   galaxian3=createSprite(Math.round(random(20,380)),0,10,10);
-  galaxian3.scale=0.5;
+  galaxian3.scale=0.3;
   galaxian3.addImage(enemyImg4);
   galaxian3.velocityY =4;
   galaxian3.lifetime =500;
@@ -182,7 +205,24 @@ function createEnemyBullet(x){
   bullet.x=x;
   bullet.velocityY=20;
   enemyBulletGroup.add(bullet);
-
 }
 
+function createAlien(){
+  alien=createSprite(0,Math.round(random(40,360)),10,10);
+  alien.addImage(alienImg);
+  speed=Math.round(random(5,15));
+  alien.scale=0.6;
+  alien.velocityX=speed;
+  alien.lifetime=500;
+  alienGroup.add(alien);
+}
 
+function createLaser(){
+  laser=createSprite(Math.round(random(20,380)),0,10,10);
+  laser.scale=0.6;
+  laser.addImage(laserImg);
+  speed=Math.round(random(10,20));
+  laser.velocityY =speed;
+  laser.lifetime =500;
+  laserGroup.add(laser);
+}

@@ -1,3 +1,9 @@
+//GAME STATES
+var gameState=PLAY;
+var PLAY=1;
+var ENd=0
+
+
 var score = 0;
 var count = 0;
 var space;
@@ -12,14 +18,18 @@ var enemyImg,enemyImg2,enemyImg3,enemyImg4;
 
 var createGalaxian,createGalaxian1,createGalaxian2,createGalaxian3;
 
-var burstImg, bulletImg;
+var burstImg, bulletImg, rockImg;
 
 var laserImg;
 var laserImg2;
 var laserImg3;
 var laserImg4;
 
+var life,life2,life3,lifeImg,lifeImg2,lifeImg3;
+
 function preload(){
+
+  //LOADING IMAGES
   spaceImg=loadImage("images/bg.jpg");
   playerImg=loadImage("images/player.png");
 
@@ -39,9 +49,42 @@ function preload(){
 
   burstImg=loadImage("images/burst.jpg");
   bulletImg=loadImage("images/bullet.png");
+  rockImg=loadImage("images/rock.png");
+  stoneImg=loadImage("images/stone.png");
 
+  //LIFE IMAGES
+  lifeImg=loadImage("images/life.png");
+  lifeImg2=loadImage("images/life.png");
+  lifeImg3=loadImage("images/life.png");
+
+
+  //ARROW KEYS
+  rightArrow=loadImage("images/rightArrow.jpg");
+  leftArrow=loadImage("images/leftArrow.jpg");
+
+  //LOADING SOUNDS
   hit=loadSound("sounds/shoot.wav");
   beep=loadSound("sounds/beep.mp3");
+
+  explosion=loadSound("sounds/Big-explosion-8-bit.mp3");
+
+  invader=loadSound("sounds/fastinvader1.wav");
+  invader2=loadSound("sounds/fastinvader2.wav");
+  invader3=loadSound("sounds/fastinvader3.wav");
+  invader4=loadSound("sounds/fastinvader4.wav");
+
+  laserBolt=loadSound("sounds/laserbolt.mp3");
+  laserCannon=loadSound("sounds/lasercannon.mp3");
+
+  laserGun=loadSound("sounds/lasergun.mp3");
+  laserGun2=loadSound("sounds/lasergun2.mp3");
+  laserGun3=loadSound("sounds/lasergun3.mp3");
+
+  laserGunBlast=loadSound("sounds/lasergun4.mp3");
+  laserGunBlast2=loadSound("sounds/lasergun5.mp3");
+
+  laserGunCannon=loadSound("sounds/laserguncannonshot.mp3");
+  laserGunPew=loadSound("sounds/lasergun10.mp3");
 }
 
 
@@ -51,11 +94,36 @@ function setup(){
      space.scale = 2.5;
      space.y = space.height/2;
      
-     player = createSprite(190, 365,20,20);
+     player = createSprite(200, 365,20,20);
      player.addImage(playerImg);
      player.scale=0.5;
 
-     alienGroup=createGroup();
+     life=createSprite(12,200,5,200);
+     // burst=createSprite(20,200,20,20);
+     
+     //life=createSprite(35,25);
+     //life.addImage(lifeImg);
+     //life.scale=0.1;
+     //life.visible=true;
+
+     //button=createSprite(20,360);
+     //button.addImage(leftArrow);
+
+     //button2=createSprite(65,360);
+     //button2.addImage(rightArrow);
+     //button2.scale=0.6;
+     //life2=createSprite(50,25);
+     //life2.addImage(lifeImg2);
+     //life2.scale=0.1;
+     //life2.visible=true;
+
+     //life3=createSprite(80,25);
+     //life3.addImage(lifeImg3);
+     //life3.scale=0.1;
+     //life3.visible=true;
+
+
+     //alienGroup=createGroup();
      //alien.addImage(alienImg);
 
      //LASER GROUPS
@@ -70,9 +138,11 @@ function setup(){
      galaxian1Group = createGroup();
      galaxian2Group = createGroup();
      galaxian3Group = createGroup();
+
      bulletGroup = createGroup();
      
-
+     rockGroup=createGroup();
+     rockGroup2=createGroup();
 
      story=createSprite(200,200,20,20);
      story.addImage(storyImg);
@@ -86,8 +156,10 @@ function draw() {
   //BACKGROUND COLOR AS BLACK
   background(0);
 
-
   count =count + Math.round(World.frameRate/60);
+
+  life.shapeColor="green";
+
   player.x = World.mouseX;
   
   space.velocityY = 2;
@@ -98,9 +170,51 @@ function draw() {
   
   if (keyDown("space")) 
   {
-    createBullet(player.x);
-    hit.play();
+    //BULLET CREATION
+    createBullet(player.x); 
+    //FIRE SOUND
+    laserBolt.play();
   }
+  if(galaxianGroup.isTouching(player)){
+    life.height = life.height * 95/100;
+  }
+  
+ if(galaxian1Group.isTouching(player)){
+    life.height = life.height * 95/100;
+  } 
+  
+if(galaxian2Group.isTouching(player)){
+    life.height = life.height * 95/100;
+  }
+  
+  if(galaxian3Group.isTouching(player)){
+    life.height = life.height * 95/100;
+  }
+  
+  if(life.height < 60 && life.height > 40){
+    life.shapeColor="yellow";
+  }
+  if(life.height<40 && life.height > 20){
+    life.shapeColor ="orange";
+  }
+  if(life.height<20 ){
+    life.shapeColor="red";
+  }
+
+  
+  //if(mousePressedOver(button)){
+ //player.velocityX=-5;
+  //}
+  //if(mouseDown(button)){
+   // player.velocityX=0;
+  //}
+
+  //if(mousePressedOver(button2)){
+    //player.velocityX=5;
+  //}
+  //if(mouseDown(button2)){
+    //player.velocityX=0;
+  //}
   
   if (bulletGroup.isTouching(galaxianGroup)) 
   {
@@ -134,31 +248,42 @@ function draw() {
   {
     laserGroup.destroyEach();
     score=score-2;
-    beep.play();
+    invader.play();
   }
   if(laserGroup2.isTouching(player))
   {
     laserGroup2.destroyEach();
     score=score-1;
-    beep.play();
+    invader2.play();
   }
   if(laserGroup3.isTouching(player))
   {
     laserGroup3.destroyEach();
     score=score-3;
-    beep.play();
+    invader3.play();
   }
   if(laserGroup4.isTouching(player))
   {
     laserGroup4.destroyEach();
     score=score-2;
-    beep.play();
+    invader4.play();
   }
-
+  //ROCK AS THE NON PLAYER CONTROL ELEMENT (ASTEROID)
+  var rock = Math.round(random(0,1))
+  if(World.frameCount%100==0){
+    if(rock==0){
+    createRock();
+    }
+    else if(rock==1){
+      createRock2();
+    }
+  }
 
   //if(World.frameCount%150==0){
    // createAlien();
   //}
+
+
   //LASER APPEARANCE
   if(World.frameCount%80==0){
     createLaser();
@@ -193,11 +318,65 @@ function draw() {
     {
       createGalaxian3();
     }
-    
   }
-  fill("green");
+
+    //if(galaxianGroup.isTouching(player)||galaxian1Group.isTouching(player)||galaxian2Group.isTouching(player)||galaxian3Group.isTouching(player)){
+    //  life3.visible=false;
+    //}
+    
+    //if(player.isTouching(galaxianGroup)||player.isTouching(galaxian1Group)||player.isTouching(galaxian2Group)||player.isTouching(galaxian3Group)){
+   //   life3.visible=false;
+   // }
+
+   // if(galaxianGroup.collide(player)||galaxian1Group.collide(player)||galaxian2Group.collide(player)||galaxian3Group.collide(player)){
+    //  life3.visible=false;
+    //}
+    
+   // if(player.collide(galaxianGroup)||player.collide(galaxian1Group)||player.collide(galaxian2Group)||player.collide(galaxian3Group)){
+   //   life3.visible=false;
+    //}
+
+     //if(galaxianGroup.isTouching(player)){
+     //life.visible=false;
+     //player.destroy();
+     //space.velocityY=0;
+     //galaxianGroup.destroyEach();
+    //}
+    //if(galaxian1Group.isTouching(player)){
+      //life.visible=false;
+     // space.velocityY=0;
+     // player.destroy();
+     // galaxian1Group.destroyEach();
+   // }
+    //if(galaxian2Group.isTouching(player)){
+     // life.visible=false;
+      //space.velocityY=0;
+     // player.destroy();
+      //galaxian2Group.destroyEach();
+   // }
+    //if(galaxian3Group.isTouching(player)){
+     // life.visible=false;
+     // space.velocityY=0;
+     // player.destroy();
+     // galaxian3Group.destroyEach();
+    //}
+  
+    //END STATE
+
+    //if(player.isTouching(galaxianGroup)||player.isTouching(galaxian1Group)||player.isTouching(galaxian2Group)||player.isTouching(galaxian3Group)){
+    //  life3.destroy();
+    //}
+
+    //if(galaxianGroup.collide(player)||galaxian1Group.collide(player)||galaxian2Group.collide(player)||galaxian3Group.collide(player)){
+     // life3.destroy();}
+    
+    //if(player.collide(galaxianGroup)||player.collide(galaxian1Group)||player.collide(galaxian2Group)||player.collide(galaxian3Group)){
+     // life3.destroy(); }
+
+
+  fill("lightblue");
   drawSprites();
-  text("ALIENS DESTROYED: "+ score, 10, 20);
+  text("POINTS: "+ score, 10, 20);
   fill("yellow");
   text("DISTANCE COVERED: "+ count, 230, 20);
 }
@@ -205,9 +384,9 @@ function draw() {
 
 function createGalaxian() 
 {
-  galaxian = createSprite(Math.round(random(20, 380)), 0, 10, 10);
+  galaxian = createSprite(Math.round(random(20, 380)), 5, 10, 10);
   galaxian.addImage(enemyImg);
-  speed=Math.round(random(1,6));
+  speed=Math.round(random(5,10));
   galaxian.velocityY = speed;
   galaxian.scale=0.6;
   galaxian.lifetime = 500;
@@ -215,10 +394,10 @@ function createGalaxian()
 }
 
 function createGalaxian1() {
-  galaxian1 = createSprite(Math.round(random(20, 380)), 0, 10, 10);
+  galaxian1 = createSprite(Math.round(random(20, 380)), 5, 10, 10);
   galaxian1.addImage(enemyImg2);
   galaxian1.scale=0.07;
-  speed=Math.round(random(1,6));
+  speed=Math.round(random(4,9));
   galaxian1.velocityY = speed;
   galaxian1.lifetime = 500;
   galaxian1Group.add(galaxian1);
@@ -226,20 +405,20 @@ function createGalaxian1() {
 
 function createGalaxian2() 
 {
-  galaxian2 = createSprite(Math.round(random(20, 380)), 0, 10, 10);
+  galaxian2 = createSprite(Math.round(random(20, 380)), 5, 10, 10);
   galaxian2.addImage(enemyImg3);
   galaxian2.scale=0.5;
-  speed=Math.round(random(1,6));
+  speed=Math.round(random(3,10));
   galaxian2.velocityY = speed;
   galaxian2.lifetime = 500;
   galaxian2Group.add(galaxian2);
 }
 
 function createGalaxian3() {
-  galaxian3=createSprite(Math.round(random(20,380)),0,10,10);
+  galaxian3=createSprite(Math.round(random(20,380)),5,10,10);
   galaxian3.scale=0.3;
   galaxian3.addImage(enemyImg4);
-  speed=Math.round(random(1,6));
+  speed=Math.round(random(5,9));
   galaxian3.velocityY =speed;
   galaxian3.lifetime =500;
   galaxian3Group.add(galaxian3);
@@ -295,6 +474,7 @@ function createLaser3(){
   laser.lifetime =500;
   laserGroup3.add(laser);
 }
+
 function createLaser4(){
   laser=createSprite(Math.round(random(20,380)),0,10,10);
   laser.scale=0.6;
@@ -303,4 +483,28 @@ function createLaser4(){
   laser.velocityY =speed;
   laser.lifetime =500;
   laserGroup4.add(laser);
+}
+
+function createRock(){
+  rock=createSprite(Math.round(random(20,380)),0,10,10);
+  rock.scale=01;
+  rock.addImage(rockImg);
+  Yspeed=Math.round(random(10,20));
+  Xspeed=Math.round(random(-10,10));
+  rock.velocityY = Yspeed;
+  rock.velocityX = Xspeed;
+  rock.lifetime =500;
+  rockGroup.add(rock);
+}
+
+function createRock2(){
+  rock=createSprite(Math.round(random(20,380)),0,10,10);
+  rock.scale=01;
+  rock.addImage(stoneImg);
+  Yspeed=Math.round(random(10,20));
+  Xspeed=Math.round(random(-10,10));
+  rock.velocityY = Yspeed;
+  rock.velocityX = Xspeed;
+  rock.lifetime =500;
+  rockGroup2.add(rock);
 }

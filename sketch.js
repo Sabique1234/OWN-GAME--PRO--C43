@@ -1,8 +1,7 @@
 //GAME STATES
-var gameState=PLAY;
 var PLAY=1;
-var ENd=0
-
+var END=0;
+var gameState=PLAY;
 
 var score = 0;
 var count = 0;
@@ -26,6 +25,8 @@ var laserImg3;
 var laserImg4;
 
 var life,life2,life3,lifeImg,lifeImg2,lifeImg3;
+
+var resetButton, gameOverMessage;
 
 function preload(){
 
@@ -56,6 +57,10 @@ function preload(){
   lifeImg=loadImage("images/life.png");
   lifeImg2=loadImage("images/life.png");
   lifeImg3=loadImage("images/life.png");
+
+  //BUTTONS
+  resetButton=loadImage("images/reset.jpg");
+  gameOverMessage=loadImage("images/over.jpg");
 
 
   //ARROW KEYS
@@ -98,8 +103,18 @@ function setup(){
      player.addImage(playerImg);
      player.scale=0.5;
 
-     life=createSprite(12,200,5,200);
+     life=createSprite(12,200,5,100);
      // burst=createSprite(20,200,20,20);
+
+     gameOver=createSprite(200,100);
+     gameOver.addImage(gameOverMessage);
+     gameOver.scale=0.3;
+     gameOver.visible=false;
+
+     resetGame=createSprite(200,300);
+     resetGame.addImage(resetButton);
+     resetGame.scale=0.3;
+     resetGame.visible=false;
      
      //life=createSprite(35,25);
      //life.addImage(lifeImg);
@@ -156,66 +171,24 @@ function draw() {
   //BACKGROUND COLOR AS BLACK
   background(0);
 
-  count =count + Math.round(World.frameRate/60);
-
   life.shapeColor="green";
 
-  player.x = World.mouseX;
+   //MOVES THE SPACESHIP WITH RESPECT OF MOUSE ARROW (ONLY IN HORIZONTAL LINE)
+   player.x = World.mouseX;
+
+  if (keyDown("space")) 
+  {
+    //BULLET CREATION
+    //FIRE SOUND
+    hit.play();
+  }
   
   space.velocityY = 2;
   
   if (space.y > 500) {
     space.y = space.height/2;
   }
-  
-  if (keyDown("space")) 
-  {
-    //BULLET CREATION
-    createBullet(player.x); 
-    //FIRE SOUND
-    laserBolt.play();
-  }
-  if(galaxianGroup.isTouching(player)){
-    life.height = life.height * 95/100;
-  }
-  
- if(galaxian1Group.isTouching(player)){
-    life.height = life.height * 95/100;
-  } 
-  
-if(galaxian2Group.isTouching(player)){
-    life.height = life.height * 95/100;
-  }
-  
-  if(galaxian3Group.isTouching(player)){
-    life.height = life.height * 95/100;
-  }
-  
-  if(life.height < 60 && life.height > 40){
-    life.shapeColor="yellow";
-  }
-  if(life.height<40 && life.height > 20){
-    life.shapeColor ="orange";
-  }
-  if(life.height<20 ){
-    life.shapeColor="red";
-  }
 
-  
-  //if(mousePressedOver(button)){
- //player.velocityX=-5;
-  //}
-  //if(mouseDown(button)){
-   // player.velocityX=0;
-  //}
-
-  //if(mousePressedOver(button2)){
-    //player.velocityX=5;
-  //}
-  //if(mouseDown(button2)){
-    //player.velocityX=0;
-  //}
-  
   if (bulletGroup.isTouching(galaxianGroup)) 
   {
     galaxianGroup.destroyEach();
@@ -268,57 +241,136 @@ if(galaxian2Group.isTouching(player)){
     score=score-2;
     invader4.play();
   }
-  //ROCK AS THE NON PLAYER CONTROL ELEMENT (ASTEROID)
-  var rock = Math.round(random(0,1))
-  if(World.frameCount%100==0){
-    if(rock==0){
-    createRock();
-    }
-    else if(rock==1){
-      createRock2();
-    }
+
+//ROCK AS THE NON PLAYER CONTROL ELEMENT (ASTEROID)
+var rock = Math.round(random(0,1))
+if(World.frameCount%100==0){
+  if(rock==0){
+  createRock();
   }
+  else if(rock==1){
+    createRock2();
+  }
+}
+
+if(galaxianGroup.isTouching(player)){
+  galaxianGroup.destroyEach();
+ }
+if(galaxian1Group.isTouching(player)){
+ galaxian1Group.destroyEach();
+ }
+if(galaxian2Group.isTouching(player)){
+ galaxian2Group.destroyEach();
+ }
+if(galaxian3Group.isTouching(player)){
+ galaxian3Group.destroyEach();
+ }
+
+
+//LASER APPEARANCE
+if(World.frameCount%80==0){
+  createLaser();
+}
+if(World.frameCount%100==0){
+  createLaser2();
+}
+if(World.frameCount%120==0){
+  createLaser3();
+}
+if(World.frameCount%140==0){
+  createLaser4();
+}
+
+var select_enemy = Math.round(random(0,3));
+
+if (World.frameCount %100 == 0)
+  {
+  if (select_enemy == 0) 
+  {
+     createGalaxian();
+  } 
+  else if (select_enemy == 1)
+  {
+    createGalaxian1();
+  }
+  else if (select_enemy == 2) 
+  {
+    createGalaxian2();
+  }
+   else if (select_enemy==3)
+  {
+    createGalaxian3();
+  }
+}
+
+count =count + Math.round(World.frameRate/60);
+
+  //GAME STATE IN PLAY MODE
+  if(gameState===PLAY){
+
+    
+
+  if(galaxianGroup.isTouching(player)){
+    life.height = life.height * 50/160;
+  }
+  
+ if(galaxian1Group.isTouching(player)){
+    life.height = life.height * 50/160;
+  } 
+  
+if(galaxian2Group.isTouching(player)){
+    life.height = life.height * 50/160;
+  }
+  
+  if(galaxian3Group.isTouching(player)){
+    life.height = life.height * 50/160;
+  }
+  
+  if(life.height < 60 && life.height > 40){
+    life.shapeColor="yellow";
+  }
+  if(life.height<40 && life.height > 20){
+    life.shapeColor ="orange";
+  }
+  if(life.height<20 ){
+    life.shapeColor="red";
+  }
+if(keyDown("space")){
+  createBullet(player.x);
+}
+  createGalaxian();
+  createGalaxian1();
+  createGalaxian2();
+  createGalaxian3();
+  createLaser();
+  createLaser2();
+  createLaser3();
+  createLaser4();
+  createRock();
+  createRock2();
+
+
+
+  //if(mousePressedOver(button)){
+ //player.velocityX=-5;
+  //}
+  //if(mouseDown(button)){
+   // player.velocityX=0;
+  //}
+
+  //if(mousePressedOver(button2)){
+    //player.velocityX=5;
+  //}
+  //if(mouseDown(button2)){
+    //player.velocityX=0;
+  //}
 
   //if(World.frameCount%150==0){
    // createAlien();
   //}
 
 
-  //LASER APPEARANCE
-  if(World.frameCount%80==0){
-    createLaser();
-  }
-  if(World.frameCount%100==0){
-    createLaser2();
-  }
-  if(World.frameCount%120==0){
-    createLaser3();
-  }
-  if(World.frameCount%140==0){
-    createLaser4();
-  }
   
- var select_enemy = Math.round(random(0,3));
-  
-  if (World.frameCount %100 == 0)
-    {
-    if (select_enemy == 0) 
-    {
-       createGalaxian();
-    } 
-    else if (select_enemy == 1)
-    {
-      createGalaxian1();
-    }
-    else if (select_enemy == 2) 
-    {
-      createGalaxian2();
-    }
-     else if (select_enemy==3)
-    {
-      createGalaxian3();
-    }
-  }
 
     //if(galaxianGroup.isTouching(player)||galaxian1Group.isTouching(player)||galaxian2Group.isTouching(player)||galaxian3Group.isTouching(player)){
     //  life3.visible=false;
@@ -336,30 +388,15 @@ if(galaxian2Group.isTouching(player)){
    //   life3.visible=false;
     //}
 
-     //if(galaxianGroup.isTouching(player)){
-     //life.visible=false;
-     //player.destroy();
-     //space.velocityY=0;
-     //galaxianGroup.destroyEach();
-    //}
-    //if(galaxian1Group.isTouching(player)){
-      //life.visible=false;
-     // space.velocityY=0;
-     // player.destroy();
-     // galaxian1Group.destroyEach();
-   // }
-    //if(galaxian2Group.isTouching(player)){
-     // life.visible=false;
-      //space.velocityY=0;
-     // player.destroy();
-      //galaxian2Group.destroyEach();
-   // }
-    //if(galaxian3Group.isTouching(player)){
-     // life.visible=false;
-     // space.velocityY=0;
-     // player.destroy();
-     // galaxian3Group.destroyEach();
-    //}
+     
+
+     (life.height <= 5)
+     {
+      gameState = END;
+     }
+
+     
+
   
     //END STATE
 
@@ -372,13 +409,49 @@ if(galaxian2Group.isTouching(player)){
     
     //if(player.collide(galaxianGroup)||player.collide(galaxian1Group)||player.collide(galaxian2Group)||player.collide(galaxian3Group)){
      // life3.destroy(); }
+  }
 
+  else if(gameState === END){
+   
+    bulletGroup.destroyEach();
 
-  fill("lightblue");
+    galaxianGroup.destroyEach();
+    galaxian1Group.destroyEach();
+    galaxian2Group.destroyEach();
+    galaxian3Group.destroyEach();
+
+    rockGroup.destroyEach();
+    rockGroup2.destroyEach();
+
+    laserGroup.destroyEach();
+    laserGroup2.destroyEach();
+    laserGroup3.destroyEach();
+    laserGroup4.destroyEach();
+
+    player.velocityX = 0;
+    player.velocityY = 0;
+    space.velocityX  =0;
+
+    resetButton.visible = true;
+    gameOverMessage.visible=true;
+
+   }
+   if(mousePressedOver(resetButton)&& gameState == END){
+      gameState = PLAY;
+
+      gameOverMessage.visible = false;
+      resetButton.visible=false;
+
+      life.height = 100;
+    }
+  
   drawSprites();
+  
+  fill("lightblue");
   text("POINTS: "+ score, 10, 20);
   fill("yellow");
   text("DISTANCE COVERED: "+ count, 230, 20);
+
 }
 
 
@@ -427,7 +500,7 @@ function createGalaxian3() {
 function createBullet(x) {
   var bullet= createSprite(100, 100, 5, 10);
   bullet.y = 330;
-  bullet.x = x;                                           
+  bullet.x = player.x;                                           
   bullet.addImage(bulletImg);
   bullet.scale=0.3;
   bullet.velocityY = -35;
@@ -508,3 +581,5 @@ function createRock2(){
   rock.lifetime =500;
   rockGroup2.add(rock);
 }
+
+

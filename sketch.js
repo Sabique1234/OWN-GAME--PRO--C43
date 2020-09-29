@@ -111,7 +111,7 @@ function setup(){
      gameOver.scale=0.3;
      gameOver.visible=false;
 
-     resetGame=createSprite(200,300);
+     resetGame=createSprite(200,200);
      resetGame.addImage(resetButton);
      resetGame.scale=0.3;
      resetGame.visible=false;
@@ -178,152 +178,37 @@ function draw() {
 
   if (keyDown("space")) 
   {
-    //BULLET CREATION
+    createBullet();
     //FIRE SOUND
     hit.play();
   }
   
   space.velocityY = 2;
   
-  if (space.y > 500) {
+  if (space.y > 500) 
+   {
     space.y = space.height/2;
-  }
+   }
 
-  if (bulletGroup.isTouching(galaxianGroup)) 
-  {
-    galaxianGroup.destroyEach();
-    bulletGroup.destroyEach();
-    score = score + 2;
-  }
-   else if (bulletGroup.isTouching(galaxian1Group)) 
   
-  {
-    galaxian1Group.destroyEach();
-    bulletGroup.destroyEach();
-    score = score + 1;
-  } 
-  else if (bulletGroup.isTouching(galaxian2Group)) 
-
-  {
-    galaxian2Group.destroyEach();
-    bulletGroup.destroyEach(); 
-    score = score + 2;
-  } 
-  else if (bulletGroup.isTouching(galaxian3Group)) 
-  {
-
-    galaxian3Group.destroyEach();
-    bulletGroup.destroyEach();
-    score = score + 1;
-  }
-
-  if(laserGroup.isTouching(player))
-  {
-    laserGroup.destroyEach();
-    score=score-2;
-    invader.play();
-  }
-  if(laserGroup2.isTouching(player))
-  {
-    laserGroup2.destroyEach();
-    score=score-1;
-    invader2.play();
-  }
-  if(laserGroup3.isTouching(player))
-  {
-    laserGroup3.destroyEach();
-    score=score-3;
-    invader3.play();
-  }
-  if(laserGroup4.isTouching(player))
-  {
-    laserGroup4.destroyEach();
-    score=score-2;
-    invader4.play();
-  }
-
-//ROCK AS THE NON PLAYER CONTROL ELEMENT (ASTEROID)
-var rock = Math.round(random(0,1))
-if(World.frameCount%100==0){
-  if(rock==0){
-  createRock();
-  }
-  else if(rock==1){
-    createRock2();
-  }
-}
-
-if(galaxianGroup.isTouching(player)){
-  galaxianGroup.destroyEach();
- }
-if(galaxian1Group.isTouching(player)){
- galaxian1Group.destroyEach();
- }
-if(galaxian2Group.isTouching(player)){
- galaxian2Group.destroyEach();
- }
-if(galaxian3Group.isTouching(player)){
- galaxian3Group.destroyEach();
- }
-
-
-//LASER APPEARANCE
-if(World.frameCount%80==0){
-  createLaser();
-}
-if(World.frameCount%100==0){
-  createLaser2();
-}
-if(World.frameCount%120==0){
-  createLaser3();
-}
-if(World.frameCount%140==0){
-  createLaser4();
-}
-
-var select_enemy = Math.round(random(0,3));
-
-if (World.frameCount %100 == 0)
-  {
-  if (select_enemy == 0) 
-  {
-     createGalaxian();
-  } 
-  else if (select_enemy == 1)
-  {
-    createGalaxian1();
-  }
-  else if (select_enemy == 2) 
-  {
-    createGalaxian2();
-  }
-   else if (select_enemy==3)
-  {
-    createGalaxian3();
-  }
-}
-
-count =count + Math.round(World.frameRate/60);
-
-  //GAME STATE IN PLAY MODE
-  if(gameState===PLAY){
-
-    
-
-  if(galaxianGroup.isTouching(player)){
+   if(galaxianGroup.isTouching(player)){
     life.height = life.height * 50/160;
+    laserGun2.play();
   }
   
  if(galaxian1Group.isTouching(player)){
     life.height = life.height * 50/160;
+    laserGun3.play();
   } 
   
 if(galaxian2Group.isTouching(player)){
     life.height = life.height * 50/160;
+    laserGun2.play();
   }
   
   if(galaxian3Group.isTouching(player)){
     life.height = life.height * 50/160;
+    laserGun3.play();
   }
   
   if(life.height < 60 && life.height > 40){
@@ -332,22 +217,33 @@ if(galaxian2Group.isTouching(player)){
   if(life.height<40 && life.height > 20){
     life.shapeColor ="orange";
   }
-  if(life.height<20 ){
+    if(life.height<20 ){
     life.shapeColor="red";
   }
-if(keyDown("space")){
-  createBullet(player.x);
+
+
+if(life.height<3)
+{
+  resetGame.visible=true;
 }
-  createGalaxian();
-  createGalaxian1();
-  createGalaxian2();
-  createGalaxian3();
-  createLaser();
-  createLaser2();
-  createLaser3();
-  createLaser4();
-  createRock();
-  createRock2();
+
+if(mousePressedOver(resetGame))
+{
+  reset();
+}
+
+  //createGalaxian();
+  //createGalaxian1();
+  //createGalaxian2();
+  //createGalaxian3();
+
+  //createLaser();
+  //createLaser2();
+  //createLaser3();
+  //createLaser4();
+
+  //createRock();
+  //createRock2();
 
 
 
@@ -388,15 +284,6 @@ if(keyDown("space")){
    //   life3.visible=false;
     //}
 
-     
-
-     (life.height <= 5)
-     {
-      gameState = END;
-     }
-
-     
-
   
     //END STATE
 
@@ -409,42 +296,136 @@ if(keyDown("space")){
     
     //if(player.collide(galaxianGroup)||player.collide(galaxian1Group)||player.collide(galaxian2Group)||player.collide(galaxian3Group)){
      // life3.destroy(); }
-  }
-
-  else if(gameState === END){
-   
-    bulletGroup.destroyEach();
-
-    galaxianGroup.destroyEach();
-    galaxian1Group.destroyEach();
-    galaxian2Group.destroyEach();
-    galaxian3Group.destroyEach();
-
-    rockGroup.destroyEach();
-    rockGroup2.destroyEach();
-
-    laserGroup.destroyEach();
-    laserGroup2.destroyEach();
-    laserGroup3.destroyEach();
-    laserGroup4.destroyEach();
-
-    player.velocityX = 0;
-    player.velocityY = 0;
-    space.velocityX  =0;
-
-    resetButton.visible = true;
-    gameOverMessage.visible=true;
-
-   }
-   if(mousePressedOver(resetButton)&& gameState == END){
-      gameState = PLAY;
-
-      gameOverMessage.visible = false;
-      resetButton.visible=false;
-
-      life.height = 100;
-    }
   
+     if (bulletGroup.isTouching(galaxianGroup)) 
+     {
+       galaxianGroup.destroyEach();
+       bulletGroup.destroyEach();
+       score = score + 2;
+     }
+      else if (bulletGroup.isTouching(galaxian1Group)) 
+     
+     {
+       galaxian1Group.destroyEach();
+       bulletGroup.destroyEach();
+       score = score + 1;
+     } 
+     else if (bulletGroup.isTouching(galaxian2Group)) 
+   
+     {
+       galaxian2Group.destroyEach();
+       bulletGroup.destroyEach(); 
+       score = score + 2;
+     } 
+     else if (bulletGroup.isTouching(galaxian3Group)) 
+     {
+   
+       galaxian3Group.destroyEach();
+       bulletGroup.destroyEach();
+       score = score + 1;
+     }
+   
+     if(laserGroup.isTouching(player))
+     {
+       laserGroup.destroyEach();
+       score=score-2;
+       invader.play();
+     }
+     if(laserGroup2.isTouching(player))
+     {
+       laserGroup2.destroyEach();
+       score=score-1;
+       invader2.play();
+     }
+     if(laserGroup3.isTouching(player))
+     {
+       laserGroup3.destroyEach();
+       score=score-3;
+       invader3.play();
+     }
+     if(laserGroup4.isTouching(player))
+     {
+       laserGroup4.destroyEach();
+       score=score-2;
+       invader4.play();
+     }
+   
+   //ROCK AS THE NON PLAYER CONTROL ELEMENT (ASTEROID)
+   var rock = Math.round(random(0,1))
+   if(World.frameCount%100==0){
+     if(rock==0){
+     createRock();
+     }
+     else if(rock==1){
+       createRock2();
+     }
+   }
+   
+   if(galaxianGroup.isTouching(player)){
+     galaxianGroup.destroyEach();
+    }
+   if(galaxian1Group.isTouching(player)){
+    galaxian1Group.destroyEach();
+    }
+   if(galaxian2Group.isTouching(player)){
+    galaxian2Group.destroyEach();
+    }
+   if(galaxian3Group.isTouching(player)){
+    galaxian3Group.destroyEach();
+    }
+   
+   
+   //LASER APPEARANCE
+   if(World.frameCount%80==0){
+     createLaser();
+   }
+   if(World.frameCount%100==0){
+     createLaser2();
+   }
+   if(World.frameCount%120==0){
+     createLaser3();
+   }
+   if(World.frameCount%140==0){
+     createLaser4();
+   }
+   
+   var select_enemy = Math.round(random(0,3));
+   
+   if (World.frameCount %100 == 0)
+     {
+     if (select_enemy == 0) 
+     {
+        createGalaxian();
+     } 
+     else if (select_enemy == 1)
+     {
+       createGalaxian1();
+     }
+     else if (select_enemy == 2) 
+     {
+       createGalaxian2();
+     }
+      else if (select_enemy==3)
+     {
+       createGalaxian3();
+     }
+   }
+   
+   count =count + Math.round(World.frameRate/60);
+   
+       
+  
+   if(keyDown("space")){
+     createBullet(player.x);
+   }
+
+
+
+
+
+
+
+
   drawSprites();
   
   fill("lightblue");
@@ -582,4 +563,56 @@ function createRock2(){
   rockGroup2.add(rock);
 }
 
+function reset(){
+  player.x=200;
+  player.y=365;
+  player.x=World.mouseX;
+  score=0;
+  count=0;
+  resetGame.visible=false;
+  life=createSprite(12,200,5,100);
 
+  if(galaxianGroup.isTouching(player)){
+    life.height = life.height * 50/160;
+    laserGun2.play();
+  }
+  
+ if(galaxian1Group.isTouching(player)){
+    life.height = life.height * 50/160;
+    laserGun3.play();
+  } 
+  
+if(galaxian2Group.isTouching(player)){
+    life.height = life.height * 50/160;
+    laserGun2.play();
+  }
+  
+  if(galaxian3Group.isTouching(player)){
+    life.height = life.height * 50/160;
+    laserGun3.play();
+  }
+  
+  if(life.height < 60 && life.height > 40){
+    life.shapeColor="yellow";
+  }
+  if(life.height<40 && life.height > 20){
+    life.shapeColor ="orange";
+  }
+    if(life.height<20 ){
+    life.shapeColor="red";
+  }
+
+
+if(life.height<3)
+{
+  resetGame.visible=true;
+  reset();
+}
+
+fill("lightblue");
+text("POINTS: "+ score, 10, 20);
+fill("yellow");
+text("DISTANCE COVERED: "+ count, 230, 20);
+
+
+}
